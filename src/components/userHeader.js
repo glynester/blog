@@ -10,10 +10,8 @@ class UserHeader extends React.Component {
   }
 
   render(){
-    const user=this.props.users.find(user=>user.id===this.props.userId);
-    if (!user){
-      return null;
-    }
+    const { user } = this.props;
+    if (!user){ return null; }
     return (
       // Call action creator inside here to get appropriate user
       <div className="header">{user.name}</div>
@@ -22,8 +20,9 @@ class UserHeader extends React.Component {
 
 }
 
-const mapStateToProps=(state)=>{
-  return { users: state.users }
+// Can do precalculations (ownProps reference items about to go into the component) inside mapStateToProps to cut down on data passed.
+const mapStateToProps=(state, ownProps)=>{
+  return { user: state.users.find(user=>user.id===ownProps.userId) }
 }
 
 // Must call an action creator to fetch the user to show on the screen.
