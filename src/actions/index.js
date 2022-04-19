@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import jsonPlaceholder from "../apis/jsonPlaceholder";
 
 // This is wrong - can't use async await syntax
@@ -23,12 +24,29 @@ export const fetchPosts=()=>{
   };
 };
 
+// Can't refetch user - side effect - can only fetch once. Would need identical action creator (without the memoize) to do this.
 export const fetchUser=(id)=>{
-  return async dispatch=>{
-    const response= await jsonPlaceholder.get(`/users/${id}`);
+  return dispatch=>{
+    _fetchUser(id, dispatch);   // Call memoized fetchUser inside action creator
+  };
+};
+
+const _fetchUser=_.memoize(async(id, dispatch)=>{
+  const response= await jsonPlaceholder.get(`/users/${id}`);
     dispatch({
       type: 'FETCH_USER',
       payload: response.data
     })
-  };
-};
+});
+
+// export  const fetchUser= function(id){
+//   // Doesn't work because a new function is created each time so this can't be memoized.
+//   return _.memoize(async function (dispatch){
+//     const response= await jsonPlaceholder.get(`/users/${id}`);
+//     dispatch({
+//       type: 'FETCH_USER',
+//       payload: response.data
+//     })
+//   });
+// };
+
