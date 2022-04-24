@@ -8,10 +8,16 @@ export const fetchPostsAndUsers=()=>async (dispatch, getState)=>{
   // When we dispatch a function, redux thunk invokes it.
   console.log('fetched posts:', getState().posts);
   // lodash version of map function:
-  const userIds = _.uniq(_.map(getState().posts, 'userId')); // returns array with just unique user ID's
-  console.log('User IDs:', userIds);
-  userIds.forEach(id=>dispatch(fetchUser(id))); // Only done once for each unique user ID now.
+  // const userIds = _.uniq(_.map(getState().posts, 'userId')); // returns array with just unique user ID's
+  // userIds.forEach(id=>dispatch(fetchUser(id))); // Only done once for each unique user ID now.
   // Don't need 'await' for line above as no logic after this line. But couldn't use 'await' with forEach loop -  another method would be needed.
+  // Alternative lodash SyntaxError.
+  _.chain(getState().posts)
+  .map('userId')
+  .uniq()
+  .forEach(id=>dispatch(fetchUser(id)))
+  .value();  // .value needed by lodash to execute.
+
 } 
 
 // Only concerned with what we return from the outer function (the action creator).
