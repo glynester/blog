@@ -3,11 +3,15 @@ import jsonPlaceholder from "../apis/jsonPlaceholder";
 
 // wired up with redux thunk - as for other action creators
 // dispatch - to dispatch our own actions inside here.
-export const fetchPostsAndUsers=()=>async dispatch=>{
-  console.log('about to fetch posts');
+export const fetchPostsAndUsers=()=>async (dispatch, getState)=>{
   await dispatch(fetchPosts()); // Pass the result of calling fetchPosts() into dispatch function. Manually depatching result of calling action creator. 
   // When we dispatch a function, redux thunk invokes it.
-  console.log('fetched posts');
+  console.log('fetched posts:', getState().posts);
+  // lodash version of map function:
+  const userIds = _.uniq(_.map(getState().posts, 'userId')); // returns array with just unique user ID's
+  console.log('User IDs:', userIds);
+  userIds.forEach(id=>dispatch(fetchUser(id))); // Only done once for each unique user ID now.
+  // Don't need 'await' for line above as no logic after this line. But couldn't use 'await' with forEach loop -  another method would be needed.
 } 
 
 // Only concerned with what we return from the outer function (the action creator).
